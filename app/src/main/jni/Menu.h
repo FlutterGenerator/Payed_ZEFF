@@ -8,11 +8,11 @@ void BeginDraw() {
 		g_window = ImGui::GetCurrentWindow();
         //ImGui::Text("%.1f FPS", io.Framerate);
 		if (ImGui::BeginTabBar(OBFUSCATE("Tab"))) {
-			if (ImGui::BeginTabItem(OBFUSCATE("Main"))) {
+			if (ImGui::BeginTabItem(OBFUSCATE("Information"))) {
                 #if defined(__aarch64__)
-                ImGui::Text(OBFUSCATE("Bit: 64")); 
+                ImGui::Text(OBFUSCATE("Bit : 64")); 
                 #else
-                ImGui::Text(OBFUSCATE("Bit: 32")); 
+                ImGui::Text(OBFUSCATE("Bit : 32")); 
                 #endif
                 ImGui::Separator();
                 ImGui::Text(OBFUSCATE("Telegram: @zeff_cheats @tojik_proof_93")); 
@@ -26,16 +26,16 @@ void BeginDraw() {
 				ImGui::Text(OBFUSCATE("Так же можно писать кириллицей в сурсе")); 
                 ImGui::EndTabItem();
             }
-			if (ImGui::BeginTabItem(OBFUSCATE("Visuals"))) {
-				if (chamsint > 1) ImGui::Separator();
-				ImGui::PushItemWidth(500);
-				ImGui::Combo(OBFUSCATE("Current Chams"), &chamsint, Chams, IM_ARRAYSIZE(Chams));
-				if (chamsint > 1) {
+			if (ImGui::BeginTabItem(OBFUSCATE("Chams"))) {
+                if (chamsint > 1) ImGui::Separator();
+                ImGui::PushItemWidth(500);
+                ImGui::Combo(OBFUSCATE("Chams Hack"), &chamsint, Chams, IM_ARRAYSIZE(Chams));
+                if (chamsint > 1) {
                     ImGui::PushItemWidth(45);
                     ImGui::ColorEdit3(OBFUSCATE("##Visible Color"), (float *) &visibleColor);
                     ImGui::SameLine();
                     ImGui::Checkbox(OBFUSCATE("RGB"), &enableRainbow);
-				}
+                }
                 if (chamsint == 6 || chamsint == 7) {
                     ImGui::ColorEdit3(OBFUSCATE("##In Wall Color"), (float *) &inWallColor);
                     ImGui::SameLine();
@@ -43,20 +43,22 @@ void BeginDraw() {
                 }
                 ImGui::PushItemWidth(0);
 				if (chamsint > 1) ImGui::Separator();
-				ImGui::EndTabItem();
-            }
-            if (ImGui::BeginTabItem(OBFUSCATE("Shaders"))) {
                 for (std::string shader : shaders) {
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
-                    if (mineShader == shader) ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1));
-                    ImGui::PushID(shader.c_str());
-                    ImGui::Text("%s", shader.c_str());
-                    ImGui::SameLine();
-                    if (ImGui::Button(OBFUSCATE("Set"))) {
-                        mineShader = shader;
-                    }
-                    ImGui::Separator();
-				    ImGui::PopID();
+                if (shader != "ps2" && shader != "ps3") continue;
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                if (mineShader == shader) 
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0, 1, 0, 1));
+                ImGui::PushID(shader.c_str());
+                const char* displayName = shader == "ps2" ? "Map Chams" : "Player Chams";
+                bool isActive = (mineShader == shader);
+                if (ImGui::Checkbox(displayName, &isActive)) {
+                if (isActive)
+                mineShader = shader;
+                else if (mineShader == shader)
+                mineShader = "";
+                }
+                ImGui::Separator();
+                ImGui::PopID();
                 }
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
                 ImGui::EndTabItem();
