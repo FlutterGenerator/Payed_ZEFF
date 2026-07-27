@@ -1,9 +1,9 @@
 package com.mycompany.application;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,44 +11,23 @@ import android.os.Looper;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.widget.LinearLayout;
 import android.view.WindowManager;
-import com.mycompany.application.GLES3JNIView;
-import java.io.InputStream;
-import android.view.WindowManager.LayoutParams;
-import android.view.Display;
 import android.provider.Settings;
-import android.widget.Toast;
-import android.content.Intent;
-import android.Manifest;
-import android.net.Uri;
-import java.io.IOException;
-import java.io.File;
-import android.util.Log;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.DataOutputStream;
-import android.content.res.AssetManager;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import android.content.pm.PackageManager;
 
 public class MainActivity extends Activity {
 
     public static WindowManager manager;
     public static WindowManager.LayoutParams vParams;
+    @SuppressLint("StaticFieldLeak")
     public static View vTouch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!Settings.canDrawOverlays(this))
-            Start(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this))
+                Start(this);
+        }
     }
 
     public static void Start(Context context) {
@@ -62,6 +41,7 @@ public class MainActivity extends Activity {
         manager.addView(display, wParams);
 
         vTouch.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -82,7 +62,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    String rect[] = GLES3JNIView.getWindowRect().split("\\|");
+                    String[] rect = GLES3JNIView.getWindowRect().split("\\|");
                     vParams.x = Integer.parseInt(rect[0]);
                     vParams.y = Integer.parseInt(rect[1]);
                     vParams.width = Integer.parseInt(rect[2]);
@@ -95,24 +75,25 @@ public class MainActivity extends Activity {
         }, 20);
     }
 
+    @SuppressLint({"RtlHardcoded", "ObsoleteSdkInt"})
     public static WindowManager.LayoutParams getAttributes(boolean isWindow) {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         int aditionalFlags = 0;
-        if (Build.VERSION.SDK_INT >= 11)
+        if (Build.VERSION.SDK_INT >= 21)
             aditionalFlags = WindowManager.LayoutParams.FLAG_SPLIT_TOUCH;
-        if (Build.VERSION.SDK_INT >= 3)
+        if (Build.VERSION.SDK_INT >= 21)
             aditionalFlags = aditionalFlags | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
         params = new WindowManager.LayoutParams(
-        WindowManager.LayoutParams.WRAP_CONTENT | WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.WRAP_CONTENT | WindowManager.LayoutParams.MATCH_PARENT,
-        0,
-        0,
-        WindowManager.LayoutParams.TYPE_APPLICATION,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN |
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                WindowManager.LayoutParams.FLAG_SPLIT_TOUCH | aditionalFlags,
-        PixelFormat.TRANSPARENT);
+                WindowManager.LayoutParams.WRAP_CONTENT | WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT | WindowManager.LayoutParams.MATCH_PARENT,
+                0,
+                0,
+                WindowManager.LayoutParams.TYPE_APPLICATION,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_OVERSCAN |
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                        WindowManager.LayoutParams.FLAG_SPLIT_TOUCH | aditionalFlags,
+                PixelFormat.TRANSPARENT);
 
         if (isWindow) {
             params.flags |=

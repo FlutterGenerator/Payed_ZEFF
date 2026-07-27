@@ -2,7 +2,7 @@ package com.mycompany.application;
 
 import android.opengl.GLSurfaceView;
 import android.content.Context;
-import android.graphics.PixelFormat;
+
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.EGLConfig;
 
